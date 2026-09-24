@@ -63,7 +63,7 @@ body {
 }
 
 .balloon-img {
-  height: clamp(120px, 24vw, 260px);
+  height: clamp(100px, 22vw, 240px);
   width: auto;
   max-width: 100%;
   object-fit: contain;
