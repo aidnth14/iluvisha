@@ -73,6 +73,30 @@ if (app) {
         <p class="counter-text" id="status-text">${state.message}</p>
       </div>
     </div>
+
+    <!-- Floating Dinner Music Player -->
+    <div class="dinner-music-player" id="dinner-player">
+      <div class="music-disc-wrap" id="music-disc-wrap" title="Tap to play/pause dinner music">
+        <div class="music-disc">🎷</div>
+      </div>
+      <div class="music-info">
+        <div class="music-title-wrap">
+          <span class="music-title">Rex Orange County — Best Friend</span>
+          <span class="music-tag">🍷 Dinner Vibe</span>
+        </div>
+        <div class="music-controls">
+          <button class="music-toggle-btn" id="play-btn" type="button" aria-label="Play/Pause">
+            <span id="play-btn-icon">▶</span>
+          </button>
+          <div class="sound-waves" id="sound-waves">
+            <span></span><span></span><span></span>
+          </div>
+          <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.22" title="Dinner Ambiance Volume (Dimmed)" />
+          <span class="volume-text" id="volume-text">22%</span>
+        </div>
+      </div>
+      <audio id="dinner-audio" src="/assets/music.mp3" loop preload="auto"></audio>
+    </div>
   `;
 
   const balloonStage = document.querySelector<HTMLElement>('#balloon-stage');
@@ -108,6 +132,61 @@ if (app) {
       }
     });
   }
+
+  // Dinner background music logic (dimmed volume)
+  const audio = document.querySelector<HTMLAudioElement>('#dinner-audio');
+  const player = document.querySelector<HTMLDivElement>('#dinner-player');
+  const playBtn = document.querySelector<HTMLButtonElement>('#play-btn');
+  const playBtnIcon = document.querySelector<HTMLSpanElement>('#play-btn-icon');
+  const discWrap = document.querySelector<HTMLDivElement>('#music-disc-wrap');
+  const volumeSlider = document.querySelector<HTMLInputElement>('#volume-slider');
+  const volumeText = document.querySelector<HTMLSpanElement>('#volume-text');
+
+  if (audio) {
+    // Set slightly dimmed dinner level (22%)
+    audio.volume = 0.22;
+
+    const updatePlayState = (playing: boolean) => {
+      if (player) player.classList.toggle('playing', playing);
+      if (playBtnIcon) playBtnIcon.textContent = playing ? '⏸' : '▶';
+    };
+
+    const togglePlay = () => {
+      if (audio.paused) {
+        audio.play().then(() => updatePlayState(true)).catch(() => {});
+      } else {
+        audio.pause();
+        updatePlayState(false);
+      }
+    };
+
+    if (playBtn) playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+    if (discWrap) discWrap.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+
+    if (volumeSlider && volumeText) {
+      volumeSlider.addEventListener('input', () => {
+        const vol = parseFloat(volumeSlider.value);
+        audio.volume = vol;
+        volumeText.textContent = `${Math.round(vol * 100)}%`;
+      });
+    }
+
+    // Auto-play dimmed dinner music softly on first interaction anywhere on page
+    const startOnFirstInteract = () => {
+      if (audio.paused) {
+        audio.play().then(() => updatePlayState(true)).catch(() => {});
+      }
+      window.removeEventListener('pointerdown', startOnFirstInteract);
+      window.removeEventListener('keydown', startOnFirstInteract);
+    };
+
+    window.addEventListener('pointerdown', startOnFirstInteract);
+    window.addEventListener('keydown', startOnFirstInteract);
+
+    // Initial play attempt (may succeed if browser allows or when opened)
+    audio.play().then(() => updatePlayState(true)).catch(() => {});
+  }
 }
+
 
 
