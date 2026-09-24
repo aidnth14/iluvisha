@@ -11,8 +11,8 @@ let currentTrackIndex = 0;
 
 if (app) {
   app.innerHTML = `
-    <div class="content-wrapper">
-      <!-- ISHA Realistic Physics Balloon Letters -->
+    <!-- Hero / Landing Section: Full focus on ISHA balloon letters -->
+    <section class="hero-landing-section" id="hero-landing">
       <div class="isha-balloon-stage" id="balloon-stage" aria-label="ISHA">
         <div class="balloon-item" data-index="0" data-letter="I">
           <img src="/assets/balloon-i.png" alt="I" class="balloon-img" draggable="false" />
@@ -29,71 +29,81 @@ if (app) {
         <div class="balloon-item" data-index="3" data-letter="A">
           <img src="/assets/balloon-a.png" alt="A" class="balloon-img" draggable="false" />
           <div class="balloon-shadow"></div>
+          <div class="sorry-text" id="sorry-text">Im sorry baby</div>
         </div>
       </div>
 
-      <!-- 3x3 Grid Pattern of Isha (IMG_5496) Underneath the Letters -->
+      <!-- Subtle scroll cue pointing down to the photo grid -->
+      <a href="#grid-section" class="scroll-cue" aria-label="Scroll down to photos">
+        <span class="scroll-arrow">↓</span>
+      </a>
+    </section>
+
+    <!-- Photo Section: 3x3 square grid with sharp square edges & 2px gap -->
+    <section class="photo-grid-section" id="grid-section">
       <div class="portrait-grid-container" id="portrait-grid">
-        <svg viewBox="0 0 540 680" class="portrait-grid-svg" aria-label="Isha portrait in 3x3 grid" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 546 546" class="portrait-grid-svg" aria-label="Isha portrait in 3x3 square grid" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <clipPath id="cell-clip-0"><rect x="20" y="24" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-1"><rect x="192" y="24" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-2"><rect x="364" y="24" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-3"><rect x="20" y="240" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-4"><rect x="192" y="240" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-5"><rect x="364" y="240" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-6"><rect x="20" y="456" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-7"><rect x="192" y="456" width="156" height="200" rx="26" ry="26" /></clipPath>
-            <clipPath id="cell-clip-8"><rect x="364" y="456" width="156" height="200" rx="26" ry="26" /></clipPath>
+            <clipPath id="sq-clip-0"><rect x="0" y="0" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-1"><rect x="182" y="0" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-2"><rect x="364" y="0" width="180" height="180" /></clipPath>
+
+            <clipPath id="sq-clip-3"><rect x="0" y="182" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-4"><rect x="182" y="182" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-5"><rect x="364" y="182" width="180" height="180" /></clipPath>
+
+            <clipPath id="sq-clip-6"><rect x="0" y="364" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-7"><rect x="182" y="364" width="180" height="180" /></clipPath>
+            <clipPath id="sq-clip-8"><rect x="364" y="364" width="180" height="180" /></clipPath>
           </defs>
 
-          <!-- 9 Interactive Cutout Cells -->
+          <!-- 9 Square Cells with 2px gap -->
           <g class="grid-cells-group">
             <!-- Row 1 -->
             <g class="grid-cell" data-cell="0">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-0)" />
-              <rect x="20" y="24" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-0)" />
+              <rect x="0" y="0" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="1">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-1)" />
-              <rect x="192" y="24" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-1)" />
+              <rect x="182" y="0" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="2">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-2)" />
-              <rect x="364" y="24" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-2)" />
+              <rect x="364" y="0" width="180" height="180" class="grid-frame" />
             </g>
 
             <!-- Row 2 -->
             <g class="grid-cell" data-cell="3">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-3)" />
-              <rect x="20" y="240" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-3)" />
+              <rect x="0" y="182" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="4">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-4)" />
-              <rect x="192" y="240" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-4)" />
+              <rect x="182" y="182" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="5">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-5)" />
-              <rect x="364" y="240" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-5)" />
+              <rect x="364" y="182" width="180" height="180" class="grid-frame" />
             </g>
 
             <!-- Row 3 -->
             <g class="grid-cell" data-cell="6">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-6)" />
-              <rect x="20" y="456" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-6)" />
+              <rect x="0" y="364" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="7">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-7)" />
-              <rect x="192" y="456" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-7)" />
+              <rect x="182" y="364" width="180" height="180" class="grid-frame" />
             </g>
             <g class="grid-cell" data-cell="8">
-              <image href="/assets/IMG_5496.jpg" x="-95" y="-30" width="760" height="1030" preserveAspectRatio="none" clip-path="url(#cell-clip-8)" />
-              <rect x="364" y="456" width="156" height="200" rx="26" ry="26" class="grid-frame" />
+              <image href="/assets/IMG_5496.jpg" x="-34" y="-35" width="614" height="832" preserveAspectRatio="none" clip-path="url(#sq-clip-8)" />
+              <rect x="364" y="364" width="180" height="180" class="grid-frame" />
             </g>
           </g>
         </svg>
       </div>
-    </div>
+    </section>
 
     <!-- Ambient Dinner Music Indicator (Dimmed) -->
     <div class="ambient-sound-indicator" id="sound-indicator">
@@ -114,6 +124,14 @@ if (app) {
   const soundNextBtn = document.querySelector<HTMLButtonElement>('#sound-next-btn');
   const soundText = document.querySelector<HTMLSpanElement>('#sound-text');
   const soundIcon = document.querySelector<HTMLSpanElement>('#sound-icon');
+  const scrollCue = document.querySelector<HTMLAnchorElement>('.scroll-cue');
+
+  if (scrollCue) {
+    scrollCue.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelector('#grid-section')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 
   if (audio) {
     audio.volume = 0.22; // Dimmed dinner ambiance volume

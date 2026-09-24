@@ -10,18 +10,16 @@
   padding: 0;
 }
 
-html, body {
+html {
+  scroll-behavior: smooth;
   width: 100%;
   min-height: 100%;
-  background: #ffffff;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  width: 100%;
+  min-height: 100%;
+  background: #ffffff;
   user-select: none;
   -webkit-user-select: none;
   overflow-x: hidden;
@@ -30,31 +28,31 @@ body {
 
 #app {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* 1. Hero Landing Section: Full Focus on ISHA Balloon Letters */
+.hero-landing-section {
+  width: 100%;
   min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 2.5rem 1rem;
+  padding: 2rem 1rem;
 }
 
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  max-width: 100%;
-}
-
-/* ISHA Realistic Physics Balloon Stage */
 .isha-balloon-stage {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px; /* exactly 15px away from each other */
-  padding: 0.5rem;
+  padding: 1.5rem;
   position: relative;
   user-select: none;
   touch-action: none;
@@ -77,7 +75,7 @@ body {
 }
 
 .balloon-img {
-  height: clamp(80px, 14vw, 150px);
+  height: clamp(110px, 20vw, 220px);
   width: auto;
   max-width: 100%;
   object-fit: contain;
@@ -97,46 +95,104 @@ body {
   display: none !important; /* drop shadow removed */
 }
 
-/* 3x3 Grid Pattern Container */
+/* "Im sorry baby" text positioned directly underneath letter A */
+.sorry-text {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.92rem, 1.8vw, 1.25rem);
+  font-family: 'Georgia', 'Playfair Display', serif;
+  font-style: italic;
+  color: #52525b;
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.03em;
+  opacity: 0.9;
+}
+
+/* Subtle scroll cue */
+.scroll-cue {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #a1a1aa;
+  transition: color 0.25s ease, transform 0.25s ease;
+  font-size: 1.3rem;
+  animation: gentleBounce 2s infinite ease-in-out;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.scroll-cue:hover {
+  color: #ec4899;
+}
+
+@keyframes gentleBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate(-50%, 0);
+  }
+  40% {
+    transform: translate(-50%, -6px);
+  }
+  60% {
+    transform: translate(-50%, -3px);
+  }
+}
+
+/* 2. Photo Grid Section: 3x3 Square Grid with Sharp Square Edges & 2px Gap */
+.photo-grid-section {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem 5rem 1rem;
+  position: relative;
+  background: #ffffff;
+}
+
 .portrait-grid-container {
-  width: clamp(260px, 34vw, 400px);
-  max-width: 90vw;
+  width: clamp(280px, 42vw, 480px);
+  max-width: 92vw;
+  aspect-ratio: 1 / 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   z-index: 5;
-  transition: transform 0.3s ease;
 }
 
 .portrait-grid-svg {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
-  overflow: visible;
-  filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.04));
 }
 
 .grid-frame {
   fill: none;
   stroke: #18181b;
-  stroke-width: 2.2;
-  transition: stroke 0.25s ease, stroke-width 0.25s ease;
+  stroke-width: 1.5;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
   pointer-events: all;
 }
 
 .grid-cell {
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform-origin: center;
 }
 
 .grid-cell:hover .grid-frame {
-  stroke: #db2777;
-  stroke-width: 3;
+  stroke: #ec4899;
+  stroke-width: 2.2;
 }
 
-/* Subtle dinner music ambiance control */
+/* Ambient Dinner Music Indicator (Dimmed) */
 .ambient-sound-indicator {
   position: fixed;
   bottom: 1.5rem;
@@ -181,7 +237,7 @@ body {
 }
 
 .sound-ctrl-btn:hover {
-  color: #db2777;
+  color: #ec4899;
   transform: scale(1.15);
 }
 
@@ -196,7 +252,7 @@ body {
 
 @media (max-width: 600px) {
   .portrait-grid-container {
-    width: clamp(250px, 80vw, 340px);
+    width: clamp(260px, 86vw, 360px);
   }
   .ambient-sound-indicator {
     bottom: 1rem;
