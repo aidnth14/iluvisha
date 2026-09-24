@@ -42,12 +42,12 @@ export class BalloonPhysics {
   private initBalloons(onBalloonTap?: (index: number) => void): void {
     const items = this.container.querySelectorAll<HTMLElement>('.balloon-item');
 
-    // Individual natural variations for each balloon
+    // Subtle natural variations with 5-7px movement distance
     const configs = [
-      { phase: 0.0, freqX: 1.1, freqY: 1.5, ampX: 7, ampY: 12, tilt: 5.5, mass: 1.0 }, // I
-      { phase: 1.8, freqX: 0.9, freqY: 1.3, ampX: 8, ampY: 14, tilt: 6.0, mass: 1.1 }, // S
-      { phase: 3.5, freqX: 1.2, freqY: 1.6, ampX: 7, ampY: 11, tilt: 5.0, mass: 1.2 }, // H
-      { phase: 5.1, freqX: 1.0, freqY: 1.4, ampX: 9, ampY: 13, tilt: 6.5, mass: 1.15 }  // A
+      { phase: 0.0, freqX: 0.9, freqY: 1.2, ampX: 3.5, ampY: 5.5, tilt: 2.2, mass: 1.0 }, // I
+      { phase: 1.8, freqX: 0.8, freqY: 1.0, ampX: 4.0, ampY: 6.0, tilt: 2.6, mass: 1.05 }, // S
+      { phase: 3.5, freqX: 1.0, freqY: 1.3, ampX: 3.2, ampY: 5.0, tilt: 2.0, mass: 1.1 }, // H
+      { phase: 5.1, freqX: 0.85, freqY: 1.1, ampX: 4.0, ampY: 5.8, tilt: 2.5, mass: 1.08 }  // A
     ];
 
     items.forEach((el, index) => {
@@ -89,8 +89,8 @@ export class BalloonPhysics {
         balloon.dragOffsetY = e.clientY - (rect.top + rect.height / 2);
         el.setPointerCapture(e.pointerId);
 
-        // Immediate tactile impulse
-        this.applyImpulse(index, (Math.random() - 0.5) * 50, -120, (Math.random() - 0.5) * 40);
+        // Subtle tactile impulse
+        this.applyImpulse(index, (Math.random() - 0.5) * 8, -16, (Math.random() - 0.5) * 6);
 
         if (onBalloonTap) {
           onBalloonTap(index);
@@ -105,15 +105,15 @@ export class BalloonPhysics {
           const anchorX = el.offsetLeft + el.offsetWidth / 2 + containerRect.left;
           const anchorY = el.offsetTop + el.offsetHeight / 2 + containerRect.top;
 
-          // Clamp displacement to keep formation integrity
-          const dx = Math.max(-60, Math.min(60, targetGlobalX - anchorX));
-          const dy = Math.max(-60, Math.min(60, targetGlobalY - anchorY));
+          // Clamp displacement to 5-7px
+          const dx = Math.max(-6.0, Math.min(6.0, targetGlobalX - anchorX));
+          const dy = Math.max(-6.0, Math.min(6.0, targetGlobalY - anchorY));
 
           balloon.x = dx;
           balloon.y = dy;
-          balloon.vx = (e.movementX || 0) * 15;
-          balloon.vy = (e.movementY || 0) * 15;
-          balloon.rotation = Math.max(-20, Math.min(20, balloon.vx * 0.3));
+          balloon.vx = (e.movementX || 0) * 4;
+          balloon.vy = (e.movementY || 0) * 4;
+          balloon.rotation = Math.max(-3.5, Math.min(3.5, balloon.vx * 0.15));
         }
       });
 
@@ -168,9 +168,9 @@ export class BalloonPhysics {
     this.balloons.forEach((_, idx) => {
       this.applyImpulse(
         idx,
-        (Math.random() - 0.5) * 70,
-        -150 - Math.random() * 80,
-        (Math.random() - 0.5) * 45
+        (Math.random() - 0.5) * 8,
+        -14,
+        (Math.random() - 0.5) * 6
       );
     });
   }
@@ -197,27 +197,26 @@ export class BalloonPhysics {
   }
 
   private update(t: number, dt: number): void {
-    const springK = 22.0;       // Tether stiffness returning to formation anchor
-    const damping = 3.6;        // Fluid air resistance damping
-    const rotSpringK = 18.0;    // Rotational stiffness
-    const rotDamping = 4.2;     // Rotational damping
+    const springK = 28.0;       // Stiff tether keeping 5-7px formation
+    const damping = 4.5;        // Fluid air resistance
+    const rotSpringK = 24.0;    // Rotational stiffness
+    const rotDamping = 4.8;     // Rotational damping
 
     for (let i = 0; i < this.balloons.length; i++) {
       const b = this.balloons[i];
 
       if (b.isDragging) {
-        // While dragging, directly render
         this.renderBalloon(b);
         continue;
       }
 
-      // 1. Natural buoyant harmonic floating & tilting (realistic balloon air drift)
+      // 1. Natural buoyant harmonic floating & tilting (5-7px range)
       const targetHoverX = Math.sin(t * b.hoverFreqX + b.phase) * b.hoverAmpX;
       const targetHoverY = Math.cos(t * b.hoverFreqY + b.phase) * b.hoverAmpY;
 
-      // Realistic tilt: base sway + tilt opposite to horizontal motion (aerodynamic drag)
+      // Subtle tilt: base sway + tilt opposite to horizontal motion
       const baseTilt = Math.sin(t * b.hoverFreqY * 0.9 + b.phase) * b.tiltAmp;
-      const velocityTilt = Math.max(-12, Math.min(12, b.vx * 0.06));
+      const velocityTilt = Math.max(-2.5, Math.min(2.5, b.vx * 0.03));
       const targetTilt = baseTilt + velocityTilt;
 
       // 2. Spring-Damper physics forces toward anchor
@@ -225,7 +224,7 @@ export class BalloonPhysics {
       let fy = -springK * (b.y - targetHoverY) - damping * b.vy;
       let torque = -rotSpringK * (b.rotation - targetTilt) - rotDamping * b.vRot;
 
-      // 3. Ambient interactive airflow (mouse proximity repulsion)
+      // 3. Subtle ambient airflow on mouse proximity (tight range)
       if (this.mouseX !== -9999 && this.mouseY !== -9999) {
         const rect = b.imgElement.getBoundingClientRect();
         const bx = rect.left + rect.width / 2;
@@ -233,26 +232,24 @@ export class BalloonPhysics {
         const dx = bx - this.mouseX;
         const dy = by - this.mouseY;
         const dist = Math.hypot(dx, dy);
-        const influenceRadius = 140;
+        const influenceRadius = 100;
 
         if (dist < influenceRadius && dist > 1) {
           const normDist = 1 - dist / influenceRadius;
-          const pushForce = normDist * normDist * 320;
+          const pushForce = normDist * normDist * 40;
           const angle = Math.atan2(dy, dx);
 
           fx += Math.cos(angle) * pushForce;
           fy += Math.sin(angle) * pushForce;
 
-          // Aerodynamic tilt from wind push
-          torque += (dx > 0 ? 1 : -1) * pushForce * 0.05;
+          torque += (dx > 0 ? 1 : -1) * pushForce * 0.02;
 
-          // Add wind velocity transfer from fast cursor movement
-          fx += this.mouseVx * normDist * 40;
-          fy += this.mouseVy * normDist * 40;
+          fx += this.mouseVx * normDist * 8;
+          fy += this.mouseVy * normDist * 8;
         }
       }
 
-      // 4. Numerical integration (Newton's 2nd Law)
+      // 4. Numerical integration
       const ax = fx / b.mass;
       const ay = fy / b.mass;
       const aRot = torque / b.mass;
@@ -265,10 +262,10 @@ export class BalloonPhysics {
       b.y += b.vy * dt;
       b.rotation += b.vRot * dt;
 
-      // 5. Formation safety bounds: ensure balloons never break formation
-      b.x = Math.max(-45, Math.min(45, b.x));
-      b.y = Math.max(-40, Math.min(40, b.y));
-      b.rotation = Math.max(-25, Math.min(25, b.rotation));
+      // 5. Strict 5-7px formation bounds
+      b.x = Math.max(-6.0, Math.min(6.0, b.x));
+      b.y = Math.max(-6.5, Math.min(6.5, b.y));
+      b.rotation = Math.max(-3.5, Math.min(3.5, b.rotation));
 
       // 6. Update CSS transform
       this.renderBalloon(b);
@@ -276,16 +273,7 @@ export class BalloonPhysics {
   }
 
   private renderBalloon(b: BalloonItem): void {
-    // Translate and tilt balloon image
     b.imgElement.style.transform = `translate3d(${b.x.toFixed(2)}px, ${b.y.toFixed(2)}px, 0) rotate(${b.rotation.toFixed(2)}deg)`;
-
-    // Dynamic depth shadow: shrinks and fades when balloon rises, darkens when close
-    if (b.shadowElement) {
-      const heightFactor = Math.max(0.6, Math.min(1.4, 1 - b.y * 0.012));
-      const shadowX = b.x * 0.35;
-      const shadowOpacity = Math.max(0.18, Math.min(0.55, 0.38 - b.y * 0.005));
-      b.shadowElement.style.transform = `translate3d(${shadowX.toFixed(2)}px, 0, 0) scale(${heightFactor.toFixed(3)})`;
-      b.shadowElement.style.opacity = shadowOpacity.toFixed(3);
-    }
   }
 }
+
