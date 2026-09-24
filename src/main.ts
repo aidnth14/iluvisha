@@ -1,3 +1,5 @@
+import { BalloonPhysics } from './physics';
+
 interface AppState {
   count: number;
   message: string;
@@ -5,7 +7,7 @@ interface AppState {
 
 const state: AppState = {
   count: 0,
-  message: 'Welcome to iluvisha ✨'
+  message: 'Touch or move near the balloons to play with them ✨'
 };
 
 const app = document.querySelector<HTMLDivElement>('#app');
@@ -14,14 +16,33 @@ if (app) {
   app.innerHTML = `
     <div class="card">
       <div class="content">
-        <div class="badge">🚀 Powered by TypeScript & Vite</div>
-        <div class="hero-character-container">
-          <img src="/assets/letter-i.png" alt="Glossy 3D Letter I" class="hero-letter-img" title="Click or tap me!" />
+        <div class="badge">💖 For Isha</div>
+        
+        <!-- ISHA Balloon Letters Formation -->
+        <div class="isha-balloon-stage" id="balloon-stage" title="Interactive 3D Balloons - hover, tap, or drag!">
+          <div class="balloon-item" data-index="0" data-letter="I">
+            <img src="/assets/balloon-i.png" alt="Letter I" class="balloon-img" draggable="false" />
+            <div class="balloon-shadow"></div>
+          </div>
+          <div class="balloon-item" data-index="1" data-letter="S">
+            <img src="/assets/balloon-s.png" alt="Letter S" class="balloon-img" draggable="false" />
+            <div class="balloon-shadow"></div>
+          </div>
+          <div class="balloon-item" data-index="2" data-letter="H">
+            <img src="/assets/balloon-h.png" alt="Letter H" class="balloon-img" draggable="false" />
+            <div class="balloon-shadow"></div>
+          </div>
+          <div class="balloon-item" data-index="3" data-letter="A">
+            <img src="/assets/balloon-a.png" alt="Letter A" class="balloon-img" draggable="false" />
+            <div class="balloon-shadow"></div>
+          </div>
         </div>
-        <img src="/assets/heart.svg" alt="Heart Icon" width="56" height="56" style="margin-bottom: 1.25rem;" />
+
+        <img src="/assets/heart.svg" alt="Heart Icon" width="48" height="48" style="margin-bottom: 0.75rem;" />
         <h1>iluvisha</h1>
-        <p class="subtitle">A fast, modern TypeScript project configured with custom assets and deployed seamlessly to Vercel.</p>
-        <div class="letter-image" title="Hover or click to open">
+        <p class="subtitle">Floating with realistic physics just for you. Tap, drag, or hover over each balloon!</p>
+
+        <div class="letter-image" title="Hover or click to open letter">
           <div class="animated-mail">
             <div class="back-fold"></div>
             <div class="letter">
@@ -38,12 +59,14 @@ if (app) {
           </div>
           <div class="shadow"></div>
         </div>
+
         <div class="tags">
+          <span class="tag">Physics Simulation</span>
+          <span class="tag">3D Balloons</span>
           <span class="tag">TypeScript 5+</span>
-          <span class="tag">Vite</span>
           <span class="tag">Vercel</span>
-          <span class="tag">Assets</span>
         </div>
+
         <div class="btn-container">
           <button id="counter" class="interactive-btn" type="button">Send Love 💖 (0)</button>
         </div>
@@ -52,31 +75,26 @@ if (app) {
     </div>
   `;
 
+  const balloonStage = document.querySelector<HTMLElement>('#balloon-stage');
+  const button = document.querySelector<HTMLButtonElement>('#counter');
+  const statusText = document.querySelector<HTMLParagraphElement>('#status-text');
+  const letters = ['I', 'S', 'H', 'A'];
+
+  let physics: BalloonPhysics | null = null;
+  if (balloonStage) {
+    physics = new BalloonPhysics(balloonStage, (index) => {
+      state.count += 5;
+      if (button) button.textContent = `Send Love 💖 (${state.count})`;
+      if (statusText) {
+        statusText.textContent = `You tapped '${letters[index]}' balloon! Love bonus added: ${state.count} 💖`;
+      }
+    });
+  }
+
   const letterImage = document.querySelector<HTMLDivElement>('.letter-image');
   if (letterImage) {
     letterImage.addEventListener('click', () => {
       letterImage.classList.toggle('active');
-    });
-  }
-
-  const button = document.querySelector<HTMLButtonElement>('#counter');
-  const statusText = document.querySelector<HTMLParagraphElement>('#status-text');
-  const heroLetter = document.querySelector<HTMLImageElement>('.hero-letter-img');
-
-  if (heroLetter && statusText) {
-    heroLetter.addEventListener('click', () => {
-      state.count += 5;
-      if (button) button.textContent = `Send Love 💖 (${state.count})`;
-      statusText.textContent = `You tapped the 3D 'I'! Bonus love added: ${state.count}! 💖`;
-      heroLetter.animate([
-        { transform: 'scale(1) rotate(0deg)' },
-        { transform: 'scale(1.28) rotate(-12deg)' },
-        { transform: 'scale(0.9) rotate(12deg)' },
-        { transform: 'scale(1) rotate(0deg)' }
-      ], {
-        duration: 500,
-        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
-      });
     });
   }
 
@@ -85,7 +103,11 @@ if (app) {
       state.count += 1;
       button.textContent = `Send Love 💖 (${state.count})`;
       statusText.textContent = `You've sent love ${state.count} time${state.count === 1 ? '' : 's'}!`;
+      if (physics) {
+        physics.bopAll();
+      }
     });
   }
 }
+
 
