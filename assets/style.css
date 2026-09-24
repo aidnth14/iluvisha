@@ -145,15 +145,15 @@ body {
   }
 }
 
-/* 2. Photo Grid Section: 3x3 Square Grid with Sharp Square Edges & 2px Gap */
+/* 2. Photo Grid Section: Pushed further down with generous vertical breathing room */
 .photo-grid-section {
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 4rem 1rem 5rem 1rem;
+  padding: 10rem 1rem 14rem 1rem;
   position: relative;
   background: #ffffff;
 }
@@ -167,6 +167,7 @@ body {
   align-items: center;
   position: relative;
   z-index: 5;
+  margin-top: 5rem; /* Pushes the grid more to the down */
 }
 
 .portrait-grid-svg {
@@ -251,8 +252,12 @@ body {
 }
 
 @media (max-width: 600px) {
+  .photo-grid-section {
+    padding: 6rem 1rem 10rem 1rem;
+  }
   .portrait-grid-container {
     width: clamp(260px, 86vw, 360px);
+    margin-top: 3rem;
   }
   .ambient-sound-indicator {
     bottom: 1rem;
