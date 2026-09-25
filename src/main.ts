@@ -115,7 +115,7 @@ if (app) {
         <span>⏭</span>
       </button>
     </div>
-    <audio id="dinner-audio" src="${playlist[0].src}" preload="auto"></audio>
+    <audio id="dinner-audio" src="${playlist[0].src}" preload="auto" playsinline></audio>
   `;
 
   const balloonStage = document.querySelector<HTMLElement>('#balloon-stage');
@@ -187,17 +187,19 @@ if (app) {
       nextTrack();
     });
 
-    // Auto-play on first tap / click anywhere on the page
+    // Auto-play on first tap / click anywhere on the page (supports touchstart for iOS)
     const startOnInteract = () => {
       if (audio.paused) {
         audio.play().then(() => updateUI(true)).catch(() => {});
       }
       window.removeEventListener('pointerdown', startOnInteract);
       window.removeEventListener('keydown', startOnInteract);
+      window.removeEventListener('touchstart', startOnInteract);
     };
 
     window.addEventListener('pointerdown', startOnInteract);
     window.addEventListener('keydown', startOnInteract);
+    window.addEventListener('touchstart', startOnInteract, { passive: true });
 
     // Initial play attempt
     audio.play().then(() => updateUI(true)).catch(() => {});

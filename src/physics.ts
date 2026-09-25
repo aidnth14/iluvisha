@@ -81,15 +81,19 @@ export class BalloonPhysics {
 
       this.balloons.push(balloon);
 
-      // Tap / Click interaction
+      // Tap / Click / Touch interaction
       el.addEventListener('pointerdown', (e) => {
         balloon.isDragging = true;
         const rect = el.getBoundingClientRect();
         balloon.dragOffsetX = e.clientX - (rect.left + rect.width / 2);
         balloon.dragOffsetY = e.clientY - (rect.top + rect.height / 2);
-        el.setPointerCapture(e.pointerId);
+        try {
+          el.setPointerCapture(e.pointerId);
+        } catch {
+          // pointer capture fallback
+        }
 
-        // Subtle tactile impulse
+        // Tactile impulse on touch / click
         this.applyImpulse(index, (Math.random() - 0.5) * 8, -16, (Math.random() - 0.5) * 6);
 
         if (onBalloonTap) {
@@ -147,12 +151,21 @@ export class BalloonPhysics {
       this.mouseY = e.clientY;
     });
 
-    window.addEventListener('pointerleave', () => {
+    const resetMouse = () => {
       this.mouseX = -9999;
       this.mouseY = -9999;
       this.mouseVx = 0;
       this.mouseVy = 0;
+    };
+
+    window.addEventListener('pointerleave', resetMouse);
+    window.addEventListener('pointerup', (e) => {
+      if (e.pointerType === 'touch') {
+        resetMouse();
+      }
     });
+    window.addEventListener('touchend', resetMouse, { passive: true });
+    window.addEventListener('touchcancel', resetMouse, { passive: true });
   }
 
   public applyImpulse(index: number, fx: number, fy: number, fRot: number): void {
@@ -276,4 +289,3 @@ export class BalloonPhysics {
     b.imgElement.style.transform = `translate3d(${b.x.toFixed(2)}px, ${b.y.toFixed(2)}px, 0) rotate(${b.rotation.toFixed(2)}deg)`;
   }
 }
-
