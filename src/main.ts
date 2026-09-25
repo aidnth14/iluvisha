@@ -121,13 +121,14 @@ if (app) {
                 </div>
                 <div class="letter-signoff">Forever yours ❤️</div>
               </div>
-              <div class="letter-stamp">
-                <div class="letter-stamp-inner"></div>
+              <div class="letter-stamp" aria-hidden="true">
+                <span class="letter-stamp-inner">🌸</span>
               </div>
             </div>
             <div class="top-fold"></div>
             <div class="body"></div>
             <div class="left-fold"></div>
+            <div class="right-fold"></div>
           </div>
           <div class="shadow"></div>
         </div>
@@ -174,7 +175,7 @@ if (app) {
     heart.className = 'flowing-heart';
     heart.textContent = heartIcons[Math.floor(Math.random() * heartIcons.length)];
 
-    const startX = (Math.random() - 0.5) * 80;
+    const startX = (Math.random() - 0.5) * 140;
     const driftX = (Math.random() - 0.5) * 130;
     const duration = 2.0 + Math.random() * 1.2;
     const size = 16 + Math.random() * 14;
