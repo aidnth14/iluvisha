@@ -11,6 +11,21 @@ let currentTrackIndex = 0;
 
 if (app) {
   app.innerHTML = `
+    <!-- Darkened Welcome Curtain for Physical Touch / Sound Activation -->
+    <div id="welcome-curtain" class="welcome-curtain" role="button" tabindex="0" aria-label="Tap anywhere on the screen to enter">
+      <div class="curtain-content">
+        <div class="curtain-heart">💖</div>
+        <div class="curtain-loading" id="curtain-loading">
+          <span class="curtain-dots">Preparing something special for you...</span>
+        </div>
+        <div class="curtain-prompt hidden" id="curtain-prompt">
+          <h2 class="curtain-title">Tap anywhere on the screen</h2>
+          <p class="curtain-subtitle">🎵 Turn your sound on for the best experience</p>
+          <div class="curtain-pulse-ring"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Hero / Landing Section: Full focus on ISHA balloon letters -->
     <section class="hero-landing-section" id="hero-landing">
       <div class="isha-balloon-stage" id="balloon-stage" aria-label="ISHA">
@@ -249,23 +264,30 @@ if (app) {
     });
   }
 
-  if (audio) {
-    audio.volume = 0.22; // Dimmed dinner ambiance volume
+  const welcomeCurtain = document.querySelector<HTMLElement>('#welcome-curtain');
+  const curtainLoading = document.querySelector<HTMLElement>('#curtain-loading');
+  const curtainPrompt = document.querySelector<HTMLElement>('#curtain-prompt');
 
-    const updateUI = (playing: boolean) => {
-      if (soundIcon) soundIcon.textContent = playing ? '🎵' : '🔇';
-      if (soundText) soundText.textContent = playlist[currentTrackIndex].title;
-    };
+  const updateUI = (playing: boolean) => {
+    if (soundIcon) soundIcon.textContent = playing ? '🎵' : '🔇';
+    if (soundText) soundText.textContent = playlist[currentTrackIndex].title;
+  };
+
+  if (audio) {
+    audio.muted = false;
+    audio.volume = 0.55;
 
     const loadAndPlayTrack = (index: number) => {
       currentTrackIndex = (index + playlist.length) % playlist.length;
       audio.src = playlist[currentTrackIndex].src;
       audio.load();
+      audio.muted = false;
       audio.play().then(() => updateUI(true)).catch(() => updateUI(false));
     };
 
     const toggleAudio = () => {
       if (audio.paused) {
+        audio.muted = false;
         audio.play().then(() => updateUI(true)).catch(() => {});
       } else {
         audio.pause();
@@ -302,24 +324,57 @@ if (app) {
     audio.addEventListener('ended', () => {
       nextTrack();
     });
-
-    // Auto-play on first tap / click anywhere on the page (supports touchstart for iOS)
-    const startOnInteract = () => {
-      if (audio.paused) {
-        audio.play().then(() => updateUI(true)).catch(() => {});
-      }
-      window.removeEventListener('pointerdown', startOnInteract);
-      window.removeEventListener('keydown', startOnInteract);
-      window.removeEventListener('touchstart', startOnInteract);
-    };
-
-    window.addEventListener('pointerdown', startOnInteract);
-    window.addEventListener('keydown', startOnInteract);
-    window.addEventListener('touchstart', startOnInteract, { passive: true });
-
-    // Initial play attempt
-    audio.play().then(() => updateUI(true)).catch(() => {});
   }
+
+  // After 3 seconds, inform the user to tap anywhere on the screen
+  let curtainTimer: number | null = window.setTimeout(() => {
+    if (curtainLoading) curtainLoading.style.display = 'none';
+    if (curtainPrompt) curtainPrompt.classList.remove('hidden');
+  }, 3000);
+
+  let curtainDismissed = false;
+  const dismissCurtainAndPlay = () => {
+    if (curtainDismissed) return;
+    curtainDismissed = true;
+
+    if (curtainTimer !== null) {
+      clearTimeout(curtainTimer);
+      curtainTimer = null;
+    }
+
+    if (audio) {
+      audio.muted = false;
+      audio.volume = 0.55;
+      audio.play().then(() => updateUI(true)).catch((err) => {
+        console.warn('Physical touch play attempt:', err);
+      });
+    }
+
+    if (welcomeCurtain) {
+      welcomeCurtain.classList.add('curtain-fade-out');
+      setTimeout(() => {
+        welcomeCurtain.remove();
+      }, 850);
+    }
+
+    window.removeEventListener('pointerdown', dismissCurtainAndPlay);
+    window.removeEventListener('keydown', dismissCurtainAndPlay);
+    window.removeEventListener('touchstart', dismissCurtainAndPlay);
+  };
+
+  if (welcomeCurtain) {
+    welcomeCurtain.addEventListener('click', dismissCurtainAndPlay);
+    welcomeCurtain.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        dismissCurtainAndPlay();
+      }
+    });
+  }
+
+  window.addEventListener('pointerdown', dismissCurtainAndPlay);
+  window.addEventListener('keydown', dismissCurtainAndPlay);
+  window.addEventListener('touchstart', dismissCurtainAndPlay, { passive: true });
 
   if (balloonStage) {
     new BalloonPhysics(balloonStage);

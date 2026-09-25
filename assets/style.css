@@ -38,6 +38,157 @@ body {
   overflow-x: hidden;
 }
 
+/* Darkened Welcome Curtain for Physical Touch / Audio Activation */
+.welcome-curtain {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  background: radial-gradient(circle at center, rgba(24, 24, 27, 0.94), rgba(9, 9, 11, 0.98));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.85s ease;
+  touch-action: manipulation;
+}
+
+.welcome-curtain.curtain-fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.curtain-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  max-width: 90vw;
+}
+
+.curtain-heart {
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  margin-bottom: 1.25rem;
+  animation: curtainHeartbeat 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 16px rgba(244, 63, 94, 0.65));
+}
+
+@keyframes curtainHeartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+.curtain-loading {
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity 0.4s ease;
+}
+
+.curtain-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: curtainPromptFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.curtain-prompt.hidden {
+  display: none;
+}
+
+.curtain-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.4rem, 4.5vw, 2rem);
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.2px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  animation: curtainPulseText 2s ease-in-out infinite;
+}
+
+@keyframes curtainPulseText {
+  0%, 100% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+.curtain-subtitle {
+  font-size: clamp(0.85rem, 2.5vw, 0.98rem);
+  color: #fda4af;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.curtain-pulse-ring {
+  margin-top: 1.8rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(251, 113, 133, 0.7);
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+  animation: ringPulse 1.8s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.curtain-pulse-ring::after {
+  content: '👆';
+  font-size: 1.35rem;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 14px rgba(251, 113, 133, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 113, 133, 0);
+  }
+}
+
+@keyframes curtainPromptFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* 1. Hero Landing Section: Full Viewport Focus on ISHA Balloon Letters */
 .hero-landing-section {
   width: 100%;
