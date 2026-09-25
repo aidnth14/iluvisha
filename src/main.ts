@@ -103,6 +103,27 @@ if (app) {
           </g>
         </svg>
       </div>
+
+      <!-- Animated Interactive Love Letter Envelope Underneath the Grid -->
+      <div class="envelope-wrapper">
+        <div class="letter-image" id="letter-image" role="button" tabindex="0" aria-label="Open letter">
+          <div class="animated-mail">
+            <div class="back-fold"></div>
+            <div class="letter">
+              <div class="letter-border"></div>
+              <div class="letter-title"></div>
+              <div class="letter-context"></div>
+              <div class="letter-stamp">
+                <div class="letter-stamp-inner"></div>
+              </div>
+            </div>
+            <div class="top-fold"></div>
+            <div class="body"></div>
+            <div class="left-fold"></div>
+          </div>
+          <div class="shadow"></div>
+        </div>
+      </div>
     </section>
 
     <!-- Ambient Dinner Music Indicator (Dimmed) -->
@@ -125,11 +146,25 @@ if (app) {
   const soundText = document.querySelector<HTMLSpanElement>('#sound-text');
   const soundIcon = document.querySelector<HTMLSpanElement>('#sound-icon');
   const scrollCue = document.querySelector<HTMLAnchorElement>('.scroll-cue');
+  const letterImage = document.querySelector<HTMLElement>('#letter-image');
 
   if (scrollCue) {
     scrollCue.addEventListener('click', (e) => {
       e.preventDefault();
       document.querySelector('#grid-section')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // Interactive envelope tap/click toggle
+  if (letterImage) {
+    letterImage.addEventListener('click', () => {
+      letterImage.classList.toggle('active');
+    });
+    letterImage.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        letterImage.classList.toggle('active');
+      }
     });
   }
 
