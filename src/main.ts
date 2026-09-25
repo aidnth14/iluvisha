@@ -26,8 +26,11 @@ if (app) {
       </div>
     </div>
 
+    <!-- Dimmed Background Overlay when Note Pops Out -->
+    <div class="note-backdrop" id="note-backdrop" aria-hidden="true"></div>
+
     <!-- Hero / Landing Section: Full focus on ISHA balloon letters -->
-    <section class="hero-landing-section" id="hero-landing">
+    <section class="hero-landing-section snap-section" id="hero-landing">
       <div class="isha-balloon-stage" id="balloon-stage" aria-label="ISHA">
         <div class="balloon-item" data-index="0" data-letter="I">
           <img src="/assets/balloon-i.png" alt="I" class="balloon-img" draggable="false" />
@@ -55,7 +58,7 @@ if (app) {
     </section>
 
     <!-- Photo Section: 3x3 square grid with sharp square edges & 2px gap -->
-    <section class="photo-grid-section" id="grid-section">
+    <section class="photo-grid-section snap-section" id="grid-section">
       <div class="portrait-grid-container" id="portrait-grid">
         <svg viewBox="0 0 546 546" class="portrait-grid-svg" aria-label="Isha portrait in 3x3 square grid" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -119,15 +122,23 @@ if (app) {
         </svg>
       </div>
 
+      <!-- Subtle scroll cue pointing down to envelope hero -->
+      <a href="#envelope-section" class="scroll-cue grid-scroll-cue" id="cue-to-envelope" aria-label="Scroll down to love letter">
+        <span class="scroll-arrow">↓</span>
+      </a>
+    </section>
+
+    <!-- Envelope Hero Section: Full screen dedicated hero for love letter -->
+    <section class="envelope-hero-section snap-section" id="envelope-section">
       <!-- Animated Love Letter Envelope with Message & Flowing Hearts -->
-      <div class="envelope-wrapper">
+      <div class="envelope-wrapper" id="envelope-wrapper">
         <!-- Floating Hearts Layer -->
         <div class="hearts-container" id="hearts-container" aria-hidden="true"></div>
 
         <div class="letter-image" id="letter-image" role="button" tabindex="0" aria-label="Open love letter">
           <div class="animated-mail">
             <div class="back-fold"></div>
-            <div class="letter">
+            <div class="letter" id="letter-note">
               <div class="letter-border"></div>
               <div class="letter-inner-content">
                 <div class="letter-salutation">My Dearest Isha,</div>
@@ -135,17 +146,17 @@ if (app) {
                   I'm truly sorry for everything baby. Every moment with you is precious, and my heart will always belong to you.
                 </div>
                 <div class="letter-signoff">Forever yours ❤️</div>
+                <div class="letter-dismiss-hint">tap background to fold back</div>
               </div>
               <div class="letter-stamp" aria-hidden="true">
                 <span class="letter-stamp-inner">🌸</span>
               </div>
             </div>
             <div class="top-fold"></div>
-            <div class="body"></div>
             <div class="left-fold"></div>
             <div class="right-fold"></div>
+            <div class="body"></div>
           </div>
-          <div class="shadow"></div>
         </div>
       </div>
     </section>
@@ -170,13 +181,24 @@ if (app) {
   const soundText = document.querySelector<HTMLSpanElement>('#sound-text');
   const soundIcon = document.querySelector<HTMLSpanElement>('#sound-icon');
   const scrollCue = document.querySelector<HTMLAnchorElement>('.scroll-cue');
+  const cueToEnvelope = document.querySelector<HTMLAnchorElement>('#cue-to-envelope');
+  const envelopeWrapper = document.querySelector<HTMLElement>('#envelope-wrapper');
   const letterImage = document.querySelector<HTMLElement>('#letter-image');
+  const noteBackdrop = document.querySelector<HTMLElement>('#note-backdrop');
+  const envelopeSection = document.querySelector<HTMLElement>('#envelope-section');
   const heartsContainer = document.querySelector<HTMLElement>('#hearts-container');
 
   if (scrollCue) {
     scrollCue.addEventListener('click', (e) => {
       e.preventDefault();
       document.querySelector('#grid-section')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  if (cueToEnvelope) {
+    cueToEnvelope.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelector('#envelope-section')?.scrollIntoView({ behavior: 'smooth' });
     });
   }
 
@@ -230,35 +252,58 @@ if (app) {
     }
   };
 
-  // Interactive envelope tap/click toggle with message & hearts
-  if (letterImage) {
-    letterImage.addEventListener('mouseenter', () => {
+  // The envelope WON'T open unless clicked
+  const openEnvelope = () => {
+    if (!envelopeWrapper?.classList.contains('open')) {
+      envelopeWrapper?.classList.add('open');
+      envelopeSection?.classList.add('is-open');
+      noteBackdrop?.classList.add('active');
       startHeartFlow();
-    });
+    }
+  };
 
-    letterImage.addEventListener('mouseleave', () => {
-      if (!letterImage.classList.contains('active')) {
-        stopHeartFlow();
-      }
-    });
+  const closeEnvelope = () => {
+    if (envelopeWrapper?.classList.contains('open')) {
+      envelopeWrapper?.classList.remove('open');
+      envelopeSection?.classList.remove('is-open');
+      noteBackdrop?.classList.remove('active');
+      stopHeartFlow();
+    }
+  };
 
-    letterImage.addEventListener('click', () => {
-      const isActive = letterImage.classList.toggle('active');
-      if (isActive) {
-        startHeartFlow();
-      } else {
-        stopHeartFlow();
+  if (letterImage) {
+    letterImage.addEventListener('click', (e) => {
+      if (!envelopeWrapper?.classList.contains('open')) {
+        e.stopPropagation();
+        openEnvelope();
       }
     });
 
     letterImage.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        const isActive = letterImage.classList.toggle('active');
-        if (isActive) {
-          startHeartFlow();
+        if (envelopeWrapper?.classList.contains('open')) {
+          closeEnvelope();
         } else {
-          stopHeartFlow();
+          openEnvelope();
+        }
+      }
+    });
+  }
+
+  // When clicked on the background, the note folds right back into the envelope
+  if (noteBackdrop) {
+    noteBackdrop.addEventListener('click', () => {
+      closeEnvelope();
+    });
+  }
+
+  if (envelopeSection) {
+    envelopeSection.addEventListener('click', (e) => {
+      if (envelopeWrapper?.classList.contains('open')) {
+        const target = e.target as HTMLElement;
+        if (!target.closest('#letter-note')) {
+          closeEnvelope();
         }
       }
     });

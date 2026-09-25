@@ -13,8 +13,11 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body {
@@ -25,7 +28,6 @@ body {
   user-select: none;
   -webkit-user-select: none;
   overflow-x: hidden;
-  overflow-y: auto;
   position: relative;
 }
 
@@ -315,24 +317,34 @@ body {
   }
 }
 
-/* 2. Photo Grid Section: 3x3 Square Grid with Sharp Square Edges & 2px Gap */
+/* Snap Section Utility */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* 2. Photo Grid Section: 3x3 Square Grid Dedicated Hero Section */
 .photo-grid-section {
   width: 100%;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  padding: 5rem 1rem calc(10rem + env(safe-area-inset-bottom, 0px)) 1rem;
+  padding: 1.5rem 1rem;
   position: relative;
   background: #ffffff;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .portrait-grid-container {
-  width: min(88vw, 440px);
+  width: min(78vmin, 440px);
   max-width: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
@@ -340,7 +352,7 @@ body {
   align-items: center;
   position: relative;
   z-index: 5;
-  margin-top: clamp(2rem, 6vh, 4.5rem);
+  margin: 0 auto;
 }
 
 .portrait-grid-svg {
@@ -367,17 +379,75 @@ body {
   stroke-width: 2.2;
 }
 
-/* 3. Animated Interactive Love Letter Envelope Underneath the Grid */
-/* 3. Animated Interactive Love Letter Envelope Underneath the Grid (Handmade Paper Texture) */
+.grid-scroll-cue {
+  bottom: calc(2.2rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* 3. Envelope Hero Section: Dedicated Viewport For Love Letter */
+.envelope-hero-section {
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: #ffffff;
+  transition: background-color 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.envelope-hero-section.is-open {
+  background-color: rgba(15, 15, 18, 0.86);
+  z-index: 250;
+}
+
+/* Dimmed Background Overlay when Note Pops Out */
+.note-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.note-backdrop.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Animated Love Letter Envelope (Zero Drop Shadow, Handmade Paper Texture) */
 .envelope-wrapper {
   position: relative;
   width: 280px;
-  height: 280px;
-  margin: clamp(4rem, 8vh, 6rem) auto 3.5rem auto;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 300;
+  transition: transform 0.6s cubic-bezier(0.34, 1.25, 0.64, 1);
+  -webkit-transition: transform 0.6s cubic-bezier(0.34, 1.25, 0.64, 1);
+}
+
+/* Shifts down when opened so popped-out note takes center of the screen */
+.envelope-wrapper.open {
+  transform: translateY(170px);
+  -webkit-transform: translateY(170px);
 }
 
 .letter-image {
@@ -385,7 +455,7 @@ body {
   top: 50%;
   left: 50%;
   width: 280px;
-  height: 220px;
+  height: 200px;
   transform: translate(-50%, -50%);
   -webkit-transform: translate(-50%, -50%);
   cursor: pointer;
@@ -401,10 +471,10 @@ body {
   position: absolute;
   height: 180px;
   width: 280px;
-  top: 20px;
+  top: 10px;
   left: 0;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
 }
@@ -419,9 +489,8 @@ body {
   background-size: cover;
   background-position: center;
   border-radius: 6px;
-  filter: brightness(0.91) contrast(1.02);
-  -webkit-filter: brightness(0.91) contrast(1.02);
-  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.08);
+  filter: brightness(0.91);
+  -webkit-filter: brightness(0.91);
   z-index: 0;
 }
 
@@ -438,11 +507,22 @@ body {
   background-position: center;
   transform-origin: 50% 0%;
   -webkit-transform-origin: 50% 0%;
-  transition: transform 0.45s 0.3s, z-index 0.1s 0.35s, filter 0.45s 0.3s;
-  -webkit-transition: transform 0.45s 0.3s, z-index 0.1s 0.35s, -webkit-filter 0.45s 0.3s;
+  transition: transform 0.5s 0.2s, z-index 0.1s 0.25s, filter 0.5s 0.2s;
+  -webkit-transition: transform 0.5s 0.2s, z-index 0.1s 0.25s, -webkit-filter 0.5s 0.2s;
   z-index: 5;
-  filter: brightness(1.03) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.14));
-  -webkit-filter: brightness(1.03) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.14));
+  filter: brightness(1.02);
+  -webkit-filter: brightness(1.02);
+}
+
+/* Flap flips open only when envelope-wrapper has .open (CLICK ONLY) */
+.envelope-wrapper.open .animated-mail .top-fold {
+  transition: transform 0.45s, z-index 0.1s, filter 0.45s;
+  -webkit-transition: transform 0.45s, z-index 0.1s, -webkit-filter 0.45s;
+  transform: rotateX(180deg);
+  -webkit-transform: rotateX(180deg);
+  z-index: 0;
+  filter: brightness(0.92);
+  -webkit-filter: brightness(0.92);
 }
 
 .animated-mail .left-fold {
@@ -488,13 +568,14 @@ body {
   background-image: url('/assets/paper-texture.jpeg');
   background-size: cover;
   background-position: bottom center;
-  filter: brightness(1.01) drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.08));
-  -webkit-filter: brightness(1.01) drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.08));
+  filter: brightness(1.01);
+  -webkit-filter: brightness(1.01);
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   z-index: 3;
 }
 
+/* The Love Letter Note - Tucked inside when closed */
 .animated-mail .letter {
   left: 17px;
   bottom: 0px;
@@ -508,9 +589,28 @@ body {
   z-index: 1;
   overflow: hidden;
   border-radius: 6px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.4s ease 0s, height 0.4s ease 0s;
-  -webkit-transition: transform 0.4s ease 0s, height 0.4s ease 0s;
+  transition: transform 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+              width 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+              height 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+              left 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+              box-shadow 0.5s ease;
+  -webkit-transition: transform 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+                      width 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+                      height 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+                      left 0.55s cubic-bezier(0.34, 1.15, 0.64, 1),
+                      box-shadow 0.5s ease;
+}
+
+/* Fully pops out and centers at the screen on click */
+.envelope-wrapper.open .animated-mail .letter {
+  transform: translateY(-330px);
+  -webkit-transform: translateY(-330px);
+  width: min(88vw, 360px);
+  height: 295px;
+  left: calc(140px - min(44vw, 180px));
+  z-index: 500;
+  border-radius: 12px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
 }
 
 .animated-mail .letter .letter-border {
@@ -530,7 +630,7 @@ body {
 }
 
 .animated-mail .letter .letter-inner-content {
-  padding: 12px 16px 8px 16px;
+  padding: 16px 20px 12px 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   color: #27272a;
   text-align: left;
@@ -540,24 +640,24 @@ body {
 
 .animated-mail .letter .letter-salutation {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   font-weight: 700;
   color: #be123c;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   letter-spacing: -0.2px;
 }
 
 .animated-mail .letter .letter-message {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   color: #374151;
-  line-height: 1.5;
-  margin-bottom: 8px;
+  line-height: 1.6;
+  margin-bottom: 12px;
   font-weight: 400;
 }
 
 .animated-mail .letter .letter-signoff {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.88rem;
+  font-size: 0.94rem;
   font-weight: 600;
   font-style: italic;
   color: #e11d48;
@@ -565,42 +665,38 @@ body {
   margin-top: 4px;
 }
 
+.letter-dismiss-hint {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 14px;
+  font-style: italic;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.3s;
+}
+
+.envelope-wrapper.open .letter-dismiss-hint {
+  opacity: 0.85;
+}
+
 .animated-mail .letter .letter-stamp {
   position: absolute;
   top: 16px;
-  right: 16px;
+  right: 18px;
   border-radius: 4px;
-  height: 28px;
-  width: 26px;
+  height: 30px;
+  width: 28px;
   background: rgba(251, 113, 133, 0.15);
   border: 1.5px dashed #f43f5e;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .animated-mail .letter .letter-stamp-inner {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
   display: inline-block;
-}
-
-.envelope-wrapper .shadow {
-  position: absolute;
-  top: 225px;
-  left: 50%;
-  width: 320px;
-  height: 26px;
-  transition: 0.4s;
-  -webkit-transition: 0.4s;
-  transform: translateX(-50%);
-  -webkit-transform: translateX(-50%);
-  border-radius: 100%;
-  background: radial-gradient(
-    rgba(0, 0, 0, 0.22),
-    rgba(0, 0, 0, 0)
-  );
 }
 
 /* Floating Hearts Container & Particle Animation */
@@ -612,7 +708,7 @@ body {
   height: 280px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 25;
+  z-index: 250;
   overflow: visible;
 }
 
@@ -647,39 +743,6 @@ body {
     opacity: 0;
     transform: translate(calc(-50% + var(--drift-x, 0px)), -240px) scale(0.65) rotate(var(--target-rot, 0deg));
   }
-}
-
-/* Hover and active touch animations for envelope */
-.letter-image:hover .animated-mail,
-.letter-image.active .animated-mail {
-  transform: translateY(40px);
-  -webkit-transform: translateY(40px);
-}
-
-.letter-image:hover .animated-mail .top-fold,
-.letter-image.active .animated-mail .top-fold {
-  transition: transform 0.45s, z-index 0.1s, filter 0.45s;
-  -webkit-transition: transform 0.45s, z-index 0.1s, -webkit-filter 0.45s;
-  transform: rotateX(180deg);
-  -webkit-transform: rotateX(180deg);
-  z-index: 0;
-  filter: brightness(0.93);
-  -webkit-filter: brightness(0.93);
-}
-
-.letter-image:hover .animated-mail .letter,
-.letter-image.active .animated-mail .letter {
-  transform: translateY(-110px);
-  -webkit-transform: translateY(-110px);
-  height: 245px;
-  transition: transform 0.5s cubic-bezier(0.34, 1.25, 0.64, 1) 0.15s, height 0.5s cubic-bezier(0.34, 1.25, 0.64, 1) 0.15s;
-  -webkit-transition: transform 0.5s cubic-bezier(0.34, 1.25, 0.64, 1) 0.15s, height 0.5s cubic-bezier(0.34, 1.25, 0.64, 1) 0.15s;
-}
-
-.letter-image:hover .shadow,
-.letter-image.active .shadow {
-  width: 340px;
-  opacity: 0.75;
 }
 
 /* Ambient Dinner Music Indicator (Dimmed Ambiance) */
@@ -760,13 +823,25 @@ body {
   }
 
   .portrait-grid-container {
-    width: min(90vw, 360px);
-    margin-top: 1.5rem;
+    width: min(84vw, 75vmin, 340px);
+    margin: 0 auto;
   }
 
   .envelope-wrapper {
-    margin: clamp(3rem, 6vh, 4rem) auto 2rem auto;
-    transform: scale(0.9);
+    margin: 0 auto;
+    transform: scale(0.92);
+  }
+
+  .envelope-wrapper.open {
+    transform: translateY(140px) scale(0.92);
+  }
+
+  .envelope-wrapper.open .animated-mail .letter {
+    transform: translateY(-295px);
+    -webkit-transform: translateY(-295px);
+    width: min(88vw, 320px);
+    height: 290px;
+    left: calc(140px - min(44vw, 160px));
   }
 
   .ambient-sound-indicator {
@@ -800,6 +875,10 @@ body {
   .scroll-cue {
     bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
   }
+
+  .grid-scroll-cue {
+    bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* Extra small mobile screens (iPhone SE, 320px - 360px) */
@@ -822,6 +901,18 @@ body {
   }
 
   .envelope-wrapper {
-    transform: scale(0.8);
+    transform: scale(0.82);
+  }
+
+  .envelope-wrapper.open {
+    transform: translateY(130px) scale(0.82);
+  }
+
+  .envelope-wrapper.open .animated-mail .letter {
+    transform: translateY(-280px);
+    -webkit-transform: translateY(-280px);
+    width: 280px;
+    height: 285px;
+    left: 0px;
   }
 }
