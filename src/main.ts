@@ -104,15 +104,23 @@ if (app) {
         </svg>
       </div>
 
-      <!-- Animated Interactive Love Letter Envelope Underneath the Grid -->
+      <!-- Animated Love Letter Envelope with Message & Flowing Hearts -->
       <div class="envelope-wrapper">
-        <div class="letter-image" id="letter-image" role="button" tabindex="0" aria-label="Open letter">
+        <!-- Floating Hearts Layer -->
+        <div class="hearts-container" id="hearts-container" aria-hidden="true"></div>
+
+        <div class="letter-image" id="letter-image" role="button" tabindex="0" aria-label="Open love letter">
           <div class="animated-mail">
             <div class="back-fold"></div>
             <div class="letter">
               <div class="letter-border"></div>
-              <div class="letter-title"></div>
-              <div class="letter-context"></div>
+              <div class="letter-inner-content">
+                <div class="letter-salutation">My Dearest Isha,</div>
+                <div class="letter-message">
+                  I'm truly sorry for everything baby. Every moment with you is precious, and my heart will always belong to you.
+                </div>
+                <div class="letter-signoff">Forever yours ❤️</div>
+              </div>
               <div class="letter-stamp">
                 <div class="letter-stamp-inner"></div>
               </div>
@@ -147,6 +155,7 @@ if (app) {
   const soundIcon = document.querySelector<HTMLSpanElement>('#sound-icon');
   const scrollCue = document.querySelector<HTMLAnchorElement>('.scroll-cue');
   const letterImage = document.querySelector<HTMLElement>('#letter-image');
+  const heartsContainer = document.querySelector<HTMLElement>('#hearts-container');
 
   if (scrollCue) {
     scrollCue.addEventListener('click', (e) => {
@@ -155,15 +164,86 @@ if (app) {
     });
   }
 
-  // Interactive envelope tap/click toggle
+  // Hearts flowing upwards animation system
+  let heartInterval: number | null = null;
+  const heartIcons = ['❤️', '💖', '💕', '💗', '💓', '💝'];
+
+  const spawnHeart = (burst = false) => {
+    if (!heartsContainer) return;
+    const heart = document.createElement('span');
+    heart.className = 'flowing-heart';
+    heart.textContent = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+
+    const startX = (Math.random() - 0.5) * 80;
+    const driftX = (Math.random() - 0.5) * 130;
+    const duration = 2.0 + Math.random() * 1.2;
+    const size = 16 + Math.random() * 14;
+    const rotation = (Math.random() - 0.5) * 50;
+
+    heart.style.left = `calc(50% + ${startX}px)`;
+    heart.style.setProperty('--drift-x', `${driftX}px`);
+    heart.style.setProperty('--target-rot', `${rotation}deg`);
+    heart.style.fontSize = `${size}px`;
+    heart.style.animationDuration = `${duration}s`;
+
+    if (burst) {
+      heart.style.animationDelay = `${Math.random() * 0.35}s`;
+    }
+
+    heartsContainer.appendChild(heart);
+
+    setTimeout(() => {
+      heart.remove();
+    }, duration * 1000 + 400);
+  };
+
+  const startHeartFlow = () => {
+    if (heartInterval !== null) return;
+    for (let i = 0; i < 7; i++) {
+      spawnHeart(true);
+    }
+    heartInterval = window.setInterval(() => {
+      spawnHeart(false);
+    }, 240);
+  };
+
+  const stopHeartFlow = () => {
+    if (heartInterval !== null) {
+      clearInterval(heartInterval);
+      heartInterval = null;
+    }
+  };
+
+  // Interactive envelope tap/click toggle with message & hearts
   if (letterImage) {
-    letterImage.addEventListener('click', () => {
-      letterImage.classList.toggle('active');
+    letterImage.addEventListener('mouseenter', () => {
+      startHeartFlow();
     });
+
+    letterImage.addEventListener('mouseleave', () => {
+      if (!letterImage.classList.contains('active')) {
+        stopHeartFlow();
+      }
+    });
+
+    letterImage.addEventListener('click', () => {
+      const isActive = letterImage.classList.toggle('active');
+      if (isActive) {
+        startHeartFlow();
+      } else {
+        stopHeartFlow();
+      }
+    });
+
     letterImage.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        letterImage.classList.toggle('active');
+        const isActive = letterImage.classList.toggle('active');
+        if (isActive) {
+          startHeartFlow();
+        } else {
+          stopHeartFlow();
+        }
       }
     });
   }
